@@ -1,40 +1,40 @@
 import pytest
 
 from django_qserializer import BaseSerializer
-from django_qserializer.tests.testapp.models import Author, Book
+from django_qserializer.tests.testapp.models import Bus, Company
 
 
 @pytest.fixture
-def book_fixture(db):
-    author = Author.objects.create()
-    return Book.objects.create(author=author)
+def bus_fixture(db):
+    company = Company.objects.create()
+    return Bus.objects.create(company=company)
 
 
-def test_manager_works(book_fixture, db, django_assert_num_queries):
+def test_manager_works(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
         pass
 
-    book = Book.objects.to_serialize(S).first()
+    bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(1):
-        book.author
+        bus.company
 
 
-def test_select_related_attr(book_fixture, db, django_assert_num_queries):
+def test_select_related_attr(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        select_related = ['author']
+        select_related = ['company']
 
-    book = Book.objects.to_serialize(S).first()
+    bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
-        book.author
+        bus.company
 
 
-def test_prefetch_related_attr(book_fixture, db, django_assert_num_queries):
+def test_prefetch_related_attr(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        prefetch_related = ['author']
+        prefetch_related = ['company']
 
     with django_assert_num_queries(2):
-        # book query + author prefetch query
-        book = Book.objects.to_serialize(S).first()
+        # bus query + company prefetch query
+        bus = Bus.objects.to_serialize(S).first()
 
     with django_assert_num_queries(0):
-        book.author
+        bus.company

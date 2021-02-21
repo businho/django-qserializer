@@ -3,10 +3,10 @@ from django.db import models
 from django_qserializer.serialization import SerializableManager
 
 
-class Author(models.Model):
-    pass
+class Company(models.Model):
+    name = models.CharField(max_length=64)
 
 
-class Book(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.SET_NULL)
+class Bus(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL)
     objects = SerializableManager()
