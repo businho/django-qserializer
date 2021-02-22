@@ -9,7 +9,7 @@ setup(
     setup_requires=[
         'pytest-runner',
     ],
-    test_require=[
+    tests_require=[
         'pytest',
         'pytest-cov',
         'pytest-django',

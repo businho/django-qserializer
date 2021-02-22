@@ -2,4 +2,7 @@
 .coverage
 
 .eggs
+build
+dist
+*.egg-info
 htmlcov
