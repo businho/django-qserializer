@@ -6,4 +6,12 @@ setup(
     install_requires=[
         'django',
     ],
+    setup_requires=[
+        'pytest-runner',
+    ],
+    test_require=[
+        'pytest',
+        'pytest-cov',
+        'pytest-django',
+    ],
 )
