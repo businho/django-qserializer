@@ -36,3 +36,13 @@ def test_global_serialize(bus_fixture, db, django_assert_num_queries):
     bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
         assert [{'company': 'Hurricane Cart'}] == list(serialize([bus]))
+
+
+def test_global_serialize_empty():
+    assert [] == serialize([])
+
+
+def test_serialize_object_not_implemented(bus_fixture, db):
+    bus = Bus.objects.to_serialize().first()
+    with pytest.raises(NotImplementedError):
+        bus.serialize()
