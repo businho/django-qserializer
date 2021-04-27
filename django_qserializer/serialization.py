@@ -39,6 +39,10 @@ class BaseSerializer:
         return self.prepare_queryset(qs)
 
     def prepare_queryset(self, qs):
+        """
+        Custom change the queryset. It is possible to implement `select_related`
+        and `prefetch_related` attributes with it, but they work nice together.
+        """
         return qs
 
     def _prepare_objects(self, objs):
@@ -47,9 +51,21 @@ class BaseSerializer:
             obj.serialize = _SerializationWrapper(self, obj)
 
     def prepare_objects(self, objs):
+        """
+        Prepare objects after they are loaded to memory.
+
+        It is a hook to add data in bulk to loaded objects, like fetching info
+        from cache and attaching to them.
+        """
         pass
 
     def serialize_object(self, obj):
+        """
+        Required implementation. It converts the Django model to a serializable
+        dict.
+
+        Avoid slow calls here because it will cause N+1 issues.
+        """
         raise NotImplementedError
 
     def serialize(self, objs):
