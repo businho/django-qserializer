@@ -43,8 +43,8 @@ def test_prefetch_related_attr(bus_fixture, db, django_assert_num_queries):
 
 def test_select_related_callable(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        def select_related(self, qs):
-            return qs.select_related('company')
+        def select_related(self):
+            return ['company']
 
     bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
@@ -53,8 +53,8 @@ def test_select_related_callable(bus_fixture, db, django_assert_num_queries):
 
 def test_prefetch_related_callable(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        def prefetch_related(self, qs):
-            return qs.prefetch_related('company')
+        def prefetch_related(self):
+            return ['company']
 
     with django_assert_num_queries(2):
         # bus query + company prefetch query

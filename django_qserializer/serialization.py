@@ -26,13 +26,13 @@ class BaseSerializer:
     def _prepare_queryset(self, qs):
         if self.select_related:
             if callable(self.select_related):
-                qs = self.select_related(qs)
+                qs = qs.select_related(*self.select_related())
             else:
                 qs = qs.select_related(*self.select_related)
 
         if self.prefetch_related:
             if callable(self.prefetch_related):
-                qs = self.prefetch_related(qs)
+                qs = qs.prefetch_related(*self.prefetch_related())
             else:
                 qs = qs.prefetch_related(*self.prefetch_related)
 
