@@ -65,7 +65,7 @@ def test_prefetch_related_callable(bus_fixture, db, django_assert_num_queries):
 
 
 def test_default_serializer_select_related(bus_fixture, db, django_assert_num_queries):
-    class BusProxy(Bus):
+    class BusProxySelectRelated(Bus):
         objects = SerializableManager(
             select_related=['company'],
         )
@@ -74,13 +74,13 @@ def test_default_serializer_select_related(bus_fixture, db, django_assert_num_qu
             app_label = 'testapp'
             proxy = True
 
-    bus = BusProxy.objects.to_serialize().first()
+    bus = BusProxySelectRelated.objects.to_serialize().first()
     with django_assert_num_queries(0):
         bus.company
 
 
 def test_default_serializer_prefetch_related(bus_fixture, db, django_assert_num_queries):
-    class BusProxy(Bus):
+    class BusProxyPrefetchRelated(Bus):
         objects = SerializableManager(
             prefetch_related=['company'],
         )
@@ -90,7 +90,7 @@ def test_default_serializer_prefetch_related(bus_fixture, db, django_assert_num_
             proxy = True
 
     with django_assert_num_queries(2):
-        bus = BusProxy.objects.to_serialize().first()
+        bus = BusProxyPrefetchRelated.objects.to_serialize().first()
 
     with django_assert_num_queries(0):
         bus.company
@@ -100,14 +100,14 @@ def test_from_queryset_works(bus_fixture):
     class CustomQuerySet(SerializableQuerySet):
         pass
 
-    class BusProxy(Bus):
+    class BusProxyValidCustomQuerySet(Bus):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
             app_label = 'testapp'
             proxy = True
 
-    BusProxy.objects.to_serialize()
+    BusProxyValidCustomQuerySet.objects.to_serialize()
 
 
 @pytest.mark.xfail(
@@ -118,11 +118,11 @@ def test_from_queryset_does_not_work():
     class CustomQuerySet(models.QuerySet):
         pass
 
-    class BusProxy(Bus):
+    class BusProxyInvalidCustomQuerySet(Bus):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
             app_label = 'testapp'
             proxy = True
 
-    BusProxy.objects.to_serialize()
+    BusProxyInvalidCustomQuerySet.objects.to_serialize()
