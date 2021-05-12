@@ -53,7 +53,9 @@ def test_extras(bus_fixture, db, django_assert_num_queries):
         select_related = ['company']
 
         def serialize_object(self, obj):
-            return obj.company.name
+            return {
+                'myattr': obj.company.name
+            }
 
     class S(BaseSerializer):
         extra = {
