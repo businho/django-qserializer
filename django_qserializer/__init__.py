@@ -4,3 +4,8 @@ from .serialization import (
     SerializableQuerySet,
     serialize,
 )
+
+BaseSerializer = BaseSerializer
+SerializableManager = SerializableManager
+SerializableQuerySet = SerializableQuerySet
+serialize = serialize

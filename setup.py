@@ -13,5 +13,6 @@ setup(
         'pytest',
         'pytest-cov',
         'pytest-django',
+        'pytest-flake8',
     ],
 )

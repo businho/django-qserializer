@@ -5,6 +5,7 @@ from django.db.models.manager import BaseManager
 
 class _SerializationWrapper:
     """Method wrapper to make a picklable object."""
+
     def __init__(self, serializer, obj):
         self.serializer = serializer
         self.obj = obj
