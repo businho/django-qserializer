@@ -8,5 +8,6 @@ class Company(models.Model):
 
 
 class Bus(models.Model):
+    plate = models.CharField(max_length=10)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL)
     objects = SerializableManager()
