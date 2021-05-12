@@ -11,18 +11,24 @@ class _SerializationWrapper:
         self.obj = obj
 
     def __call__(self):
-        return self.serializer.serialize_object(self.obj)
+        return self.serializer._serialize_object(self.obj)
 
 
 class BaseSerializer:
     select_related = None
     prefetch_related = None
+    extra = None
 
-    def __init__(self, *, select_related=None, prefetch_related=None):
+    def __init__(self, *, select_related=None, prefetch_related=None, extra=None):
         if select_related:
             self.select_related = select_related
         if prefetch_related:
             self.prefetch_related = prefetch_related
+
+        if extra:
+            self.extra = {key: _resolve_serializer(self.extra[key]) for key in extra}
+        else:
+            self.extra = {}
 
     def _prepare_queryset(self, qs):
         if self.select_related:
@@ -37,7 +43,12 @@ class BaseSerializer:
             else:
                 qs = qs.prefetch_related(*self.prefetch_related)
 
-        return self.prepare_queryset(qs)
+        qs = self.prepare_queryset(qs)
+
+        for extra in self.extra.values():
+            qs = extra._prepare_queryset(qs)
+
+        return qs
 
     def prepare_queryset(self, qs):
         """
@@ -48,6 +59,10 @@ class BaseSerializer:
 
     def _prepare_objects(self, objs):
         self.prepare_objects(objs)
+
+        for extra in self.extra.values():
+            extra._prepare_objects(objs)
+
         for obj in objs:
             obj.serialize = _SerializationWrapper(self, obj)
 
@@ -59,6 +74,12 @@ class BaseSerializer:
         from cache and attaching to them.
         """
         pass
+
+    def _serialize_object(self, obj):
+        serialized = self.serialize_object(obj)
+        for key, extra in self.extra.items():
+            serialized[key] = extra.serialize_object(obj)
+        return serialized
 
     def serialize_object(self, obj):
         """
@@ -81,17 +102,12 @@ class _SerializableModelIterable(ModelIterable):
 
 
 class SerializableQuerySet(models.QuerySet):
-    def _resolve_serializer(self, serializer):
-        if not isinstance(serializer, BaseSerializer):
-            serializer = serializer()
-        return serializer
-
     @property
     def serializer(self):
         return getattr(self, '_serializer', None)
 
     def to_serialize(self, serializer=None):
-        self._serializer = self._resolve_serializer(serializer)
+        self._serializer = _resolve_serializer(serializer)
         # https://github.com/django/django/blob/981a3426cf2f54f5282e79fb7f47726998c87cb2/django/db/models/query.py#L353
         self._iterable_class = _SerializableModelIterable
         return self._serializer._prepare_queryset(self)
@@ -124,3 +140,9 @@ def serialize(objs):
         return []
     serializer = obj.serialize.serializer
     return serializer.serialize(objs)
+
+
+def _resolve_serializer(serializer):
+    if not isinstance(serializer, BaseSerializer):
+        serializer = serializer()
+    return serializer
