@@ -91,7 +91,7 @@ class BaseSerializer:
         raise NotImplementedError
 
     def serialize(self, objs):
-        yield from map(self.serialize_object, objs)
+        yield from map(self._serialize_object, objs)
 
 
 class _SerializableModelIterable(ModelIterable):

@@ -70,10 +70,13 @@ def test_extras(bus_fixture, db, django_assert_num_queries):
     with django_assert_num_queries(1):
         bus = Bus.objects.to_serialize(S(extra=['myattr'])).first()
 
-    with django_assert_num_queries(0):
-        data = bus.serialize()
-
-    assert {
+    expected = {
         'plate': 'BUSER',
         'myattr': 'Hurricane Cart',
-    } == data
+    }
+
+    with django_assert_num_queries(0):
+        assert expected == bus.serialize()
+
+    with django_assert_num_queries(0):
+        assert expected == next(serialize([bus]))
