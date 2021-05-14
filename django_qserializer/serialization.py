@@ -1,3 +1,5 @@
+import types
+
 from django.db import models
 from django.db.models.query import ModelIterable
 from django.db.models.manager import BaseManager
@@ -142,7 +144,18 @@ def serialize(objs):
     return serializer.serialize(objs)
 
 
+class _FuncSerializer(BaseSerializer):
+    def __init__(self, func):
+        super().__init__()
+        self.func = func
+
+    def serialize_object(self, obj):
+        return self.func(obj)
+
+
 def _resolve_serializer(serializer):
-    if not isinstance(serializer, BaseSerializer):
+    if isinstance(serializer, types.FunctionType):
+        serializer = _FuncSerializer(serializer)
+    elif not isinstance(serializer, BaseSerializer):
         serializer = serializer()
     return serializer

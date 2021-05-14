@@ -57,9 +57,15 @@ def test_extras(bus_fixture, db, django_assert_num_queries):
                 'myattr': obj.company.name
             }
 
+    def func(obj):
+        return {
+            'seats': 32,
+        }
+
     class S(BaseSerializer):
         extra = {
             'myattr': Attr,
+            'func': func,
         }
 
         def serialize_object(self, obj):
@@ -67,12 +73,15 @@ def test_extras(bus_fixture, db, django_assert_num_queries):
                 'plate': obj.plate,
             }
 
+    serializer = S(extra=['myattr', 'func'])
+
     with django_assert_num_queries(1):
-        bus = Bus.objects.to_serialize(S(extra=['myattr'])).first()
+        bus = Bus.objects.to_serialize(serializer).first()
 
     expected = {
         'plate': 'BUSER',
         'myattr': 'Hurricane Cart',
+        'seats': 32,
     }
 
     with django_assert_num_queries(0):
