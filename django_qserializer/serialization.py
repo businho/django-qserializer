@@ -80,7 +80,7 @@ class BaseSerializer:
     def _serialize_object(self, obj):
         serialized = self.serialize_object(obj)
         for extra in self.extra.values():
-            serialized.update(extra.serialize_object(obj))
+            serialized.update(extra._serialize_object(obj))
         return serialized
 
     def serialize_object(self, obj):

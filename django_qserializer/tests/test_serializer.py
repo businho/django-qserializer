@@ -89,3 +89,45 @@ def test_extras(bus_fixture, db, django_assert_num_queries):
 
     with django_assert_num_queries(0):
         assert expected == next(serialize([bus]))
+
+
+def test_extras_recursive(bus_fixture, db, django_assert_num_queries):
+    def city(obj):
+        return {
+            'city': 'SJK',
+        }
+
+    class Attr(BaseSerializer):
+        extra = {
+            'city': city,
+        }
+        select_related = ['company']
+
+        def serialize_object(self, obj):
+            return {
+                'myattr': obj.company.name
+            }
+
+    class S(BaseSerializer):
+        extra = {
+            'myattr': Attr(extra=['city']),
+        }
+
+        def serialize_object(self, obj):
+            return {
+                'plate': obj.plate,
+            }
+
+    serializer = S(extra=['myattr'])
+
+    with django_assert_num_queries(1):
+        bus = Bus.objects.to_serialize(serializer).first()
+
+    expected = {
+        'plate': 'BUSER',
+        'myattr': 'Hurricane Cart',
+        'city': 'SJK',
+    }
+
+    with django_assert_num_queries(0):
+        assert expected == bus.serialize()
