@@ -1,7 +1,6 @@
 import types
 
 from django.db import models
-from django.db.models.query import ModelIterable
 from django.db.models.manager import BaseManager
 
 
@@ -96,13 +95,6 @@ class BaseSerializer:
         yield from map(self._serialize_object, objs)
 
 
-class _SerializableModelIterable(ModelIterable):
-    def __iter__(self):
-        data = list(super().__iter__())
-        self.queryset.serializer._prepare_objects(data)
-        yield from data
-
-
 class SerializableQuerySet(models.QuerySet):
     @property
     def serializer(self):
@@ -110,9 +102,11 @@ class SerializableQuerySet(models.QuerySet):
 
     def to_serialize(self, serializer=None):
         self._serializer = _resolve_serializer(serializer)
-        # https://github.com/django/django/blob/981a3426cf2f54f5282e79fb7f47726998c87cb2/django/db/models/query.py#L353
-        self._iterable_class = _SerializableModelIterable
         return self._serializer._prepare_queryset(self)
+
+    def _fetch_all(self):
+        super()._fetch_all()
+        self._serializer._prepare_objects(self._result_cache)
 
     def _clone(self):
         c = super()._clone()
