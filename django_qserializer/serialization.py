@@ -106,8 +106,13 @@ class SerializableQuerySet(models.QuerySet):
 
     def _fetch_all(self):
         super()._fetch_all()
-        if self._serializer:
-            self._serializer._prepare_objects(self._result_cache)
+        if not self._result_cache:
+            return
+
+        serializer = self.serializer
+
+        if serializer and isinstance(self._result_cache[0], models.Model):
+            serializer._prepare_objects(self._result_cache)
 
     def _clone(self):
         c = super()._clone()

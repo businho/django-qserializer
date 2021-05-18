@@ -148,7 +148,7 @@ def test_prepare_objects_after_prefetch(travel_fixture):
 
         def prepare_objects(self, objs):
             for obj in objs:
-                assert obj._prefetched_objects_cache
+                assert obj._prefetched_objects_cache['travels']
 
         def serialize_object(self, obj):
             return {
@@ -164,3 +164,19 @@ def test_query_without_serializer(bus_fixture):
     Regression test. Query without serializer failed.
     """
     Bus.objects.first()
+    list(Bus.objects.all())
+
+
+def test_values(bus_fixture):
+    """
+    Regression test.
+    """
+    qs = Bus.objects \
+        .to_serialize(BaseSerializer) \
+        .values('plate')
+    plate = list(qs)[0]
+    assert {'plate': 'BUSER'} == plate
+
+
+def test_empty_result(db):
+    Bus.objects.to_serialize(BaseSerializer).first()
