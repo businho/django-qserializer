@@ -155,4 +155,12 @@ def test_prepare_objects_after_prefetch(travel_fixture):
                 'plate': obj.plate,
             }
 
-    Bus.objects.to_serialize(S).first()
+    bus = Bus.objects.to_serialize(S).first()
+    bus.serialize()
+
+
+def test_query_without_serializer(bus_fixture):
+    """
+    Regression test. Query without serializer failed.
+    """
+    Bus.objects.first()
