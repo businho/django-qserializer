@@ -138,6 +138,31 @@ def test_extras_recursive(bus_fixture, django_assert_num_queries):
         assert expected == bus.serialize()
 
 
+def test_extra_string_arg(bus_fixture, django_assert_num_queries):
+    class S(BaseSerializer):
+        extra = {
+            'city': lambda obj: {'city': 'SJK'},
+        }
+
+        def serialize_object(self, obj):
+            return {
+                'plate': obj.plate,
+            }
+
+    serializer = S(extra='city')
+
+    with django_assert_num_queries(1):
+        bus = Bus.objects.to_serialize(serializer).first()
+
+    expected = {
+        'plate': 'BUSER',
+        'city': 'SJK',
+    }
+
+    with django_assert_num_queries(0):
+        assert expected == bus.serialize()
+
+
 def test_prepare_objects_after_prefetch(travel_fixture):
     """
     Regression test. Prior implementation ran prepare_objects before prefetchs.

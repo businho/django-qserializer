@@ -27,6 +27,8 @@ class BaseSerializer:
             self.prefetch_related = prefetch_related
 
         if extra:
+            if isinstance(extra, str):
+                extra = [extra]
             self.extra = {key: _resolve_serializer(self.extra[key]) for key in extra}
         else:
             self.extra = {}
