@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 
 from django_qserializer import BaseSerializer, serialize
@@ -205,3 +207,21 @@ def test_values(bus_fixture):
 
 def test_empty_result(db):
     Bus.objects.to_serialize(BaseSerializer).first()
+
+
+def test_fetch_all_idempotent(bus_fixture):
+    """
+    Regression test. `QuerySet._fetch_all` is called a lot of times and Django
+    execute queries once.
+    """
+    class S(BaseSerializer):
+        prepare_objects = Mock()
+
+    buses = Bus.objects.to_serialize(S).all()
+
+    list(buses)
+    S.prepare_objects.assert_called_once()
+
+    list(buses)
+    # The `prepare_objects` method was not called again.
+    S.prepare_objects.assert_called_once()

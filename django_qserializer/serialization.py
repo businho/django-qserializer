@@ -107,8 +107,9 @@ class SerializableQuerySet(models.QuerySet):
         return self._serializer._prepare_queryset(self)
 
     def _fetch_all(self):
+        result_already_cached = self._result_cache is not None
         super()._fetch_all()
-        if not self._result_cache:
+        if result_already_cached or not self._result_cache:
             return
 
         serializer = self.serializer
