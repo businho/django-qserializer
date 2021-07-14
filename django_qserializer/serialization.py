@@ -137,6 +137,14 @@ class SerializableManager(BaseManager.from_queryset(SerializableQuerySet)):
             serializer = self.default_serializer
         return self.get_queryset().to_serialize(serializer)
 
+    @classmethod
+    def from_queryset(cls, queryset_class, class_name=None):
+        if not hasattr(queryset_class, 'to_serialize'):
+            queryset_class = type(
+                f'SerializableQuerySet__{queryset_class.__name__}',
+                (SerializableQuerySet, queryset_class), {})
+        return super().from_queryset(queryset_class, class_name=class_name)
+
 
 def serialize(objs):
     try:

@@ -96,33 +96,29 @@ def test_default_serializer_prefetch_related(bus_fixture, db, django_assert_num_
         bus.company
 
 
-def test_from_queryset_works(bus_fixture):
+def test_from_queryset_with_serializable_queryset(bus_fixture):
     class CustomQuerySet(SerializableQuerySet):
         pass
 
-    class BusProxyValidCustomQuerySet(Bus):
+    class BusProxySerializableQuerySet(Bus):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
             app_label = 'testapp'
             proxy = True
 
-    BusProxyValidCustomQuerySet.objects.to_serialize()
+    BusProxySerializableQuerySet.objects.to_serialize().first()
 
 
-@pytest.mark.xfail(
-    raises=AttributeError,
-    reason="'CustomQuerySet' object has no attribute 'to_serialize'")
-def test_from_queryset_does_not_work():
-    # I want to make it work someday, don't know if it is possible.
+def test_from_queryset_with_custom_queryset(bus_fixture):
     class CustomQuerySet(models.QuerySet):
         pass
 
-    class BusProxyInvalidCustomQuerySet(Bus):
+    class BusProxyCustomQuerySet(Bus):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
             app_label = 'testapp'
             proxy = True
 
-    BusProxyInvalidCustomQuerySet.objects.to_serialize()
+    BusProxyCustomQuerySet.objects.to_serialize().first()
