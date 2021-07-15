@@ -93,9 +93,6 @@ class BaseSerializer:
         """
         raise NotImplementedError
 
-    def serialize(self, objs):
-        yield from map(self._serialize_object, objs)
-
 
 class SerializableQuerySet(models.QuerySet):
     @property
@@ -136,15 +133,6 @@ class SerializableManager(BaseManager.from_queryset(SerializableQuerySet)):
         if serializer is None:
             serializer = self.default_serializer
         return self.get_queryset().to_serialize(serializer)
-
-
-def serialize(objs):
-    try:
-        obj = objs[0]
-    except IndexError:
-        return []
-    serializer = obj.serialize.serializer
-    return serializer.serialize(objs)
 
 
 class _FuncSerializer(BaseSerializer):
