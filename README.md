@@ -31,9 +31,9 @@ class BusSerializer(BaseSerializer):
 
     def serialize_object(self, obj):
         return {
-            'id': self.id,
+            'id': obj.id,
             'company': {
-                'name': self.company.name,
+                'name': obj.company.name,
             }
         }
 ```
@@ -64,9 +64,9 @@ class BusSerializer(BaseSerializer):
 
     def serialize_object(self, obj):
         return {
-            'id': self.id,
+            'id': obj.id,
             'company': {
-                'name': self.company.name,
+                'name': obj.company.name,
             }
         }
 ```
