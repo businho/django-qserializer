@@ -26,6 +26,9 @@ class Bus(models.Model):
 A basic serializer implementation would be:
 
 ```python
+from django_qserializer import BaseSerializer
+
+
 class BusSerializer(BaseSerializer):
     select_related = ['company']
 
