@@ -1,5 +1,8 @@
 # django-qserializer
 
+[![Continuos Integration](https://github.com/buserbrasil/django-qserializer/actions/workflows/python-app.yml/badge.svg)](https://github.com/buserbrasil/django-qserializer/actions)
+[![Continuos Delivery](https://github.com/buserbrasil/django-qserializer/actions/workflows/python-publish.yml/badge.svg)](https://github.com/buserbrasil/django-qserializer/actions)
+
 Django QSerializer started as an internal [Buser](https://www.buser.com.br)
 project to improve our serialization process.
 
@@ -101,3 +104,48 @@ dict. Avoid slow calls here because it will cause N+1 issues.
 ### `BaseSerializer.serialize`
 
 Execute `serialize_object` for each model object.
+
+## Development
+
+To run the project, it is necessary the following tools:
+
+- [Python](https://wiki.python.org/moin/BeginnersGuide/Download) 3.9 or higher
+
+To create a virtual environment, run
+```
+python3  -m venv .venv
+```
+
+To activate the virtual environment, run
+```
+source .venv/bin/activate
+```
+
+To install the project's requirements in the virtual environment, run
+```
+pip install -e .\[test\]
+```
+
+To deactivate the virtual environment, run `deactivate`.
+
+Run the commands of the following sections with the virtual environment active.
+
+### Quality
+
+The quality metrics of the project are reproduced by the continuos integration (CI) pipeline of the project. CI configuration in [`.github/workflows/ci.yml`](.github/workflows/python-app.yml) file.
+
+#### Tests and linter
+
+To run tests, coverage report and linter, run
+```
+pytest
+```
+To see the html report, check `htmlcov/index.html`.
+
+Tests and coverage configuration in [`setup.cfg`](setup.cfg) file, at `[tool:pytest]` section.
+
+Linter configuration in [`setup.cfg`](setup.cfg) file, at `[flake8]` section.
+
+## License
+
+This repository is licensed under the terms of [MIT License](LICENSE).
