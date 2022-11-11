@@ -18,7 +18,7 @@ setup(
         'pytest-runner',
     ],
     tests_require=test_requirements,
-    extra_requires={
+    extras_require={
         'test': test_requirements,
     },
 )
