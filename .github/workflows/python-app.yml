@@ -20,4 +20,4 @@ jobs:
     - name: Test with pytest
       run: pytest
 
-    # TODO linter & code formatter
+    # TODO linter

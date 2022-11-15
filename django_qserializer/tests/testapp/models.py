@@ -14,4 +14,4 @@ class Bus(models.Model):
 
 
 class Travel(models.Model):
-    bus = models.ForeignKey(Bus, related_name="travels", on_delete=models.SET_NULL)
+    bus = models.ForeignKey(Bus, related_name='travels', on_delete=models.SET_NULL)

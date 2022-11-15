@@ -23,7 +23,7 @@ def test_manager_works(bus_fixture, db, django_assert_num_queries):
 
 def test_select_related_attr(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        select_related = ["company"]
+        select_related = ['company']
 
     bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
@@ -32,7 +32,7 @@ def test_select_related_attr(bus_fixture, db, django_assert_num_queries):
 
 def test_prefetch_related_attr(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
-        prefetch_related = ["company"]
+        prefetch_related = ['company']
 
     with django_assert_num_queries(2):
         # bus query + company prefetch query
@@ -45,7 +45,7 @@ def test_prefetch_related_attr(bus_fixture, db, django_assert_num_queries):
 def test_select_related_callable(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
         def select_related(self):
-            return ["company"]
+            return ['company']
 
     bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
@@ -55,7 +55,7 @@ def test_select_related_callable(bus_fixture, db, django_assert_num_queries):
 def test_prefetch_related_callable(bus_fixture, db, django_assert_num_queries):
     class S(BaseSerializer):
         def prefetch_related(self):
-            return ["company"]
+            return ['company']
 
     with django_assert_num_queries(2):
         # bus query + company prefetch query
@@ -68,11 +68,11 @@ def test_prefetch_related_callable(bus_fixture, db, django_assert_num_queries):
 def test_default_serializer_select_related(bus_fixture, db, django_assert_num_queries):
     class BusProxySelectRelated(Bus):
         objects = SerializableManager(
-            select_related=["company"],
+            select_related=['company'],
         )
 
         class Meta:
-            app_label = "testapp"
+            app_label = 'testapp'
             proxy = True
 
     bus = BusProxySelectRelated.objects.to_serialize().first()
@@ -83,11 +83,11 @@ def test_default_serializer_select_related(bus_fixture, db, django_assert_num_qu
 def test_default_serializer_prefetch_related(bus_fixture, db, django_assert_num_queries):
     class BusProxyPrefetchRelated(Bus):
         objects = SerializableManager(
-            prefetch_related=["company"],
+            prefetch_related=['company'],
         )
 
         class Meta:
-            app_label = "testapp"
+            app_label = 'testapp'
             proxy = True
 
     with django_assert_num_queries(2):
@@ -105,7 +105,7 @@ def test_from_queryset_with_serializable_queryset(bus_fixture):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
-            app_label = "testapp"
+            app_label = 'testapp'
             proxy = True
 
     BusProxySerializableQuerySet.objects.to_serialize().first()
@@ -119,7 +119,7 @@ def test_from_queryset_with_custom_queryset(bus_fixture):
         objects = SerializableManager.from_queryset(CustomQuerySet)()
 
         class Meta:
-            app_label = "testapp"
+            app_label = 'testapp'
             proxy = True
 
     BusProxyCustomQuerySet.objects.to_serialize().first()

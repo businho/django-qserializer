@@ -63,13 +63,3 @@ fail_under = 95.00
 precision = 2
 skip_covered = true
 show_missing = true
-
-[tool.black]
-line-length = 100
-
-[tool.isort]
-profile = "black"
-line_length = 100
-multi_line_output = 3
-include_trailing_comma = true
-skip_gitignore = true

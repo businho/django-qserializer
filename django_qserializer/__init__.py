@@ -1,4 +1,8 @@
-from .serialization import BaseSerializer, SerializableManager, SerializableQuerySet
+from .serialization import (
+    BaseSerializer,
+    SerializableManager,
+    SerializableQuerySet,
+)
 
 __version__ = "0.2.8"
 
