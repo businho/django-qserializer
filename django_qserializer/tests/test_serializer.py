@@ -43,7 +43,9 @@ def test_extras(bus_fixture, django_assert_num_queries):
         select_related = ['company']
 
         def serialize_object(self, obj):
-            return {'myattr': obj.company.name}
+            return {
+                'myattr': obj.company.name
+            }
 
     def func(obj):
         return {
@@ -89,7 +91,9 @@ def test_extras_recursive(bus_fixture, django_assert_num_queries):
         select_related = ['company']
 
         def serialize_object(self, obj):
-            return {'myattr': obj.company.name}
+            return {
+                'myattr': obj.company.name
+            }
 
     class S(BaseSerializer):
         extra = {
@@ -142,9 +146,9 @@ def test_extra_string_arg(bus_fixture, django_assert_num_queries):
 
 
 def test_prepare_objects_after_prefetch(travel_fixture):
-    '''
+    """
     Regression test. Prior implementation ran prepare_objects before prefetchs.
-    '''
+    """
 
     class S(BaseSerializer):
         prefetch_related = ['travels']
@@ -163,18 +167,20 @@ def test_prepare_objects_after_prefetch(travel_fixture):
 
 
 def test_query_without_serializer(bus_fixture):
-    '''
+    """
     Regression test. Query without serializer failed.
-    '''
+    """
     Bus.objects.first()
     list(Bus.objects.all())
 
 
 def test_values(bus_fixture):
-    '''
+    """
     Regression test.
-    '''
-    qs = Bus.objects.to_serialize(BaseSerializer).values('plate')
+    """
+    qs = Bus.objects \
+        .to_serialize(BaseSerializer) \
+        .values('plate')
     plate = list(qs)[0]
     assert {'plate': 'BUSER'} == plate
 
@@ -184,10 +190,10 @@ def test_empty_result(db):
 
 
 def test_fetch_all_idempotent(bus_fixture):
-    '''
+    """
     Regression test. `QuerySet._fetch_all` is called a lot of times and Django
     execute queries once.
-    '''
+    """
 
     class S(BaseSerializer):
         prepare_objects = Mock()
