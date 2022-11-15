@@ -3,7 +3,8 @@ from unittest.mock import Mock
 import pytest
 
 from django_qserializer import BaseSerializer
-from django_qserializer.tests.testapp.models import Bus, Company, Travel
+
+from .testapp.models import Bus, Company, Travel
 
 
 @pytest.fixture
@@ -193,6 +194,7 @@ def test_fetch_all_idempotent(bus_fixture):
     Regression test. `QuerySet._fetch_all` is called a lot of times and Django
     execute queries once.
     """
+
     class S(BaseSerializer):
         prepare_objects = Mock()
 

@@ -33,32 +33,32 @@ class BaseSerializer:
         else:
             self.extra = {}
 
-    def _prepare_queryset(self, qs):
+    def _prepare_queryset(self, queryset):
         if self.select_related:
             if callable(self.select_related):
-                qs = qs.select_related(*self.select_related())
+                queryset = queryset.select_related(*self.select_related())
             else:
-                qs = qs.select_related(*self.select_related)
+                queryset = queryset.select_related(*self.select_related)
 
         if self.prefetch_related:
             if callable(self.prefetch_related):
-                qs = qs.prefetch_related(*self.prefetch_related())
+                queryset = queryset.prefetch_related(*self.prefetch_related())
             else:
-                qs = qs.prefetch_related(*self.prefetch_related)
+                queryset = queryset.prefetch_related(*self.prefetch_related)
 
-        qs = self.prepare_queryset(qs)
+        queryset = self.prepare_queryset(queryset)
 
         for extra in self.extra.values():
-            qs = extra._prepare_queryset(qs)
+            queryset = extra._prepare_queryset(queryset)
 
-        return qs
+        return queryset
 
-    def prepare_queryset(self, qs):
+    def prepare_queryset(self, queryset):
         """
         Custom change the queryset. It is possible to implement `select_related`
         and `prefetch_related` attributes with it, but they work nice together.
         """
-        return qs
+        return queryset
 
     def _prepare_objects(self, objs):
         self.prepare_objects(objs)
@@ -76,7 +76,6 @@ class BaseSerializer:
         It is a hook to add data in bulk to loaded objects, like fetching info
         from cache and attaching to them.
         """
-        pass
 
     def _serialize_object(self, obj):
         serialized = self.serialize_object(obj)
@@ -97,7 +96,7 @@ class BaseSerializer:
 class SerializableQuerySet(models.QuerySet):
     @property
     def serializer(self):
-        return getattr(self, '_serializer', None)
+        return getattr(self, "_serializer", None)
 
     def to_serialize(self, serializer=None):
         self._serializer = _resolve_serializer(serializer)
@@ -115,14 +114,15 @@ class SerializableQuerySet(models.QuerySet):
             serializer._prepare_objects(self._result_cache)
 
     def _clone(self):
-        c = super()._clone()
-        c._serializer = self.serializer
-        return c
+        clone = super()._clone()
+        clone._serializer = self.serializer
+        return clone
 
 
 class SerializableManager(BaseManager.from_queryset(SerializableQuerySet)):
-    def __init__(self, *, select_related=None, prefetch_related=None,
-                 default_serializer=BaseSerializer):
+    def __init__(
+        self, *, select_related=None, prefetch_related=None, default_serializer=BaseSerializer
+    ):
         super().__init__()
         self.default_serializer = default_serializer(
             select_related=select_related,
@@ -136,10 +136,12 @@ class SerializableManager(BaseManager.from_queryset(SerializableQuerySet)):
 
     @classmethod
     def from_queryset(cls, queryset_class, class_name=None):
-        if not hasattr(queryset_class, 'to_serialize'):
+        if not hasattr(queryset_class, "to_serialize"):
             queryset_class = type(
-                f'SerializableQuerySet__{queryset_class.__name__}',
-                (SerializableQuerySet, queryset_class), {})
+                f"SerializableQuerySet__{queryset_class.__name__}",
+                (SerializableQuerySet, queryset_class),
+                {},
+            )
         return super().from_queryset(queryset_class, class_name=class_name)
 
 

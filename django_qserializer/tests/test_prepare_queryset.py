@@ -1,8 +1,9 @@
-from django.db import models
 import pytest
+from django.db import models
 
 from django_qserializer import BaseSerializer, SerializableManager, SerializableQuerySet
-from django_qserializer.tests.testapp.models import Bus, Company
+
+from .testapp.models import Bus, Company
 
 
 @pytest.fixture
