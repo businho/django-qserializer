@@ -2,6 +2,8 @@
 
 [![Continuos Integration](https://github.com/buserbrasil/django-qserializer/actions/workflows/python-app.yml/badge.svg)](https://github.com/buserbrasil/django-qserializer/actions)
 [![Continuos Delivery](https://github.com/buserbrasil/django-qserializer/actions/workflows/python-publish.yml/badge.svg)](https://github.com/buserbrasil/django-qserializer/actions)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 Django QSerializer started as an internal [Buser](https://www.buser.com.br)
 project to improve our serialization process.
@@ -106,6 +108,7 @@ dict. Avoid slow calls here because it will cause N+1 issues.
 Execute `serialize_object` for each model object.
 
 ## Development
+TODO update readme
 
 To run the project, it is necessary the following tools:
 
@@ -113,7 +116,7 @@ To run the project, it is necessary the following tools:
 
 To create a virtual environment, run
 ```
-python3  -m venv .venv
+python3 -m venv .venv
 ```
 
 To activate the virtual environment, run

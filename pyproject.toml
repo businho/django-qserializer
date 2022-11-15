@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django_qserializer"
+description = "Django queryset and serialization together"
+readme = "README.md"
+requires-python = ">=3.9"  # TODO confirm this
+license = { text = "MIT" }
+authors = [
+    { name = "Iuri de Silvio", email = "iurisilvio@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Framework :: Django",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "django",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/buserbrasil/django-qserializer"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-django",
+    "black",
+    "isort",
+]
+
+[tool.setuptools.packages.find]
+include = ["django_qserializer"]
+exclude = ["django_qserializer.tests*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "django_qserializer.__version__"}
+
+[tool.pytest.ini_options]
+filterwarnings = "error"
+addopts = [
+    "--ds=django_qserializer.tests.testapp.settings",
+    "--nomigrations",
+    "--cov=django_qserializer",
+    "--cov-report=html",
+    "--cov-report=term",
+]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95.00
+precision = 2
+skip_covered = true
+show_missing = true
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+skip_gitignore = true

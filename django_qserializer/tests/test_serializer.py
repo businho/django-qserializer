@@ -3,13 +3,14 @@ from unittest.mock import Mock
 import pytest
 
 from django_qserializer import BaseSerializer
-from django_qserializer.tests.testapp.models import Bus, Company, Travel
+
+from .testapp.models import Bus, Company, Travel
 
 
 @pytest.fixture
 def bus_fixture(db):
-    company = Company.objects.create(name='Hurricane Cart')
-    return Bus.objects.create(company=company, plate='BUSER')
+    company = Company.objects.create(name="Hurricane Cart")
+    return Bus.objects.create(company=company, plate="BUSER")
 
 
 @pytest.fixture
@@ -19,16 +20,16 @@ def travel_fixture(db, bus_fixture):
 
 def test_magic_serialize_method(bus_fixture, django_assert_num_queries):
     class S(BaseSerializer):
-        select_related = ['company']
+        select_related = ["company"]
 
         def serialize_object(self, bus):
             return {
-                'company': bus.company.name,
+                "company": bus.company.name,
             }
 
     bus = Bus.objects.to_serialize(S).first()
     with django_assert_num_queries(0):
-        assert {'company': 'Hurricane Cart'} == bus.serialize()
+        assert {"company": "Hurricane Cart"} == bus.serialize()
 
 
 def test_serialize_object_not_implemented(bus_fixture):
@@ -39,38 +40,36 @@ def test_serialize_object_not_implemented(bus_fixture):
 
 def test_extras(bus_fixture, django_assert_num_queries):
     class Attr(BaseSerializer):
-        select_related = ['company']
+        select_related = ["company"]
 
         def serialize_object(self, obj):
-            return {
-                'myattr': obj.company.name
-            }
+            return {"myattr": obj.company.name}
 
     def func(obj):
         return {
-            'seats': 32,
+            "seats": 32,
         }
 
     class S(BaseSerializer):
         extra = {
-            'myattr': Attr,
-            'func': func,
+            "myattr": Attr,
+            "func": func,
         }
 
         def serialize_object(self, obj):
             return {
-                'plate': obj.plate,
+                "plate": obj.plate,
             }
 
-    serializer = S(extra=['myattr', 'func'])
+    serializer = S(extra=["myattr", "func"])
 
     with django_assert_num_queries(1):
         bus = Bus.objects.to_serialize(serializer).first()
 
     expected = {
-        'plate': 'BUSER',
-        'myattr': 'Hurricane Cart',
-        'seats': 32,
+        "plate": "BUSER",
+        "myattr": "Hurricane Cart",
+        "seats": 32,
     }
 
     with django_assert_num_queries(0):
@@ -80,39 +79,37 @@ def test_extras(bus_fixture, django_assert_num_queries):
 def test_extras_recursive(bus_fixture, django_assert_num_queries):
     def city(obj):
         return {
-            'city': 'SJK',
+            "city": "SJK",
         }
 
     class Attr(BaseSerializer):
         extra = {
-            'city': city,
+            "city": city,
         }
-        select_related = ['company']
+        select_related = ["company"]
 
         def serialize_object(self, obj):
-            return {
-                'myattr': obj.company.name
-            }
+            return {"myattr": obj.company.name}
 
     class S(BaseSerializer):
         extra = {
-            'myattr': Attr(extra=['city']),
+            "myattr": Attr(extra=["city"]),
         }
 
         def serialize_object(self, obj):
             return {
-                'plate': obj.plate,
+                "plate": obj.plate,
             }
 
-    serializer = S(extra=['myattr'])
+    serializer = S(extra=["myattr"])
 
     with django_assert_num_queries(1):
         bus = Bus.objects.to_serialize(serializer).first()
 
     expected = {
-        'plate': 'BUSER',
-        'myattr': 'Hurricane Cart',
-        'city': 'SJK',
+        "plate": "BUSER",
+        "myattr": "Hurricane Cart",
+        "city": "SJK",
     }
 
     with django_assert_num_queries(0):
@@ -122,22 +119,22 @@ def test_extras_recursive(bus_fixture, django_assert_num_queries):
 def test_extra_string_arg(bus_fixture, django_assert_num_queries):
     class S(BaseSerializer):
         extra = {
-            'city': lambda obj: {'city': 'SJK'},
+            "city": lambda obj: {"city": "SJK"},
         }
 
         def serialize_object(self, obj):
             return {
-                'plate': obj.plate,
+                "plate": obj.plate,
             }
 
-    serializer = S(extra='city')
+    serializer = S(extra="city")
 
     with django_assert_num_queries(1):
         bus = Bus.objects.to_serialize(serializer).first()
 
     expected = {
-        'plate': 'BUSER',
-        'city': 'SJK',
+        "plate": "BUSER",
+        "city": "SJK",
     }
 
     with django_assert_num_queries(0):
@@ -150,15 +147,15 @@ def test_prepare_objects_after_prefetch(travel_fixture):
     """
 
     class S(BaseSerializer):
-        prefetch_related = ['travels']
+        prefetch_related = ["travels"]
 
         def prepare_objects(self, objs):
             for obj in objs:
-                assert obj._prefetched_objects_cache['travels']
+                assert obj._prefetched_objects_cache["travels"]
 
         def serialize_object(self, obj):
             return {
-                'plate': obj.plate,
+                "plate": obj.plate,
             }
 
     bus = Bus.objects.to_serialize(S).first()
@@ -177,11 +174,9 @@ def test_values(bus_fixture):
     """
     Regression test.
     """
-    qs = Bus.objects \
-        .to_serialize(BaseSerializer) \
-        .values('plate')
+    qs = Bus.objects.to_serialize(BaseSerializer).values("plate")
     plate = list(qs)[0]
-    assert {'plate': 'BUSER'} == plate
+    assert {"plate": "BUSER"} == plate
 
 
 def test_empty_result(db):
@@ -193,6 +188,7 @@ def test_fetch_all_idempotent(bus_fixture):
     Regression test. `QuerySet._fetch_all` is called a lot of times and Django
     execute queries once.
     """
+
     class S(BaseSerializer):
         prepare_objects = Mock()
 

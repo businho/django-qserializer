@@ -1,9 +1,5 @@
-from .serialization import (
-    BaseSerializer,
-    SerializableManager,
-    SerializableQuerySet,
-)
+from .serialization import BaseSerializer, SerializableManager, SerializableQuerySet
 
-BaseSerializer = BaseSerializer
-SerializableManager = SerializableManager
-SerializableQuerySet = SerializableQuerySet
+__version__ = "0.2.8"
+
+__all__ = ["BaseSerializer", "SerializableManager", "SerializableQuerySet"]
