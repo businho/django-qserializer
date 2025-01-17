@@ -4,6 +4,4 @@ from .serialization import (
     SerializableQuerySet,
 )
 
-BaseSerializer = BaseSerializer
-SerializableManager = SerializableManager
-SerializableQuerySet = SerializableQuerySet
+__all__ = ["BaseSerializer", "SerializableManager", "SerializableQuerySet"]
